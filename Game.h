@@ -63,6 +63,9 @@ Display highScoreDisplay;
 
 GameState gamestate = WAITING;
 
+// SCORE
+const int currentPlayerScore;
+
 
 
 };
