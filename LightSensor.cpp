@@ -10,7 +10,7 @@ LightSensor::LightSensor(int pinA, int pinB, int limit){
   finishSensor = -1;
 }
 
-bool LightSensor::chooseStartSensor() {
+bool LightSensor::ufoIsOnPlatform() {
 
   // Läs av båda ljussensorerna
   int lightA = analogRead(sensorPinA);
@@ -43,8 +43,6 @@ bool LightSensor::chooseStartSensor() {
 
   // Ingen tydlig startposition hittades
   else {
-
-    Serial.println("Place UFO on one plate");
     return false;
   }
 }
