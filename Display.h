@@ -7,22 +7,49 @@
 class Display {
 
   private:
-    int buttonPin;
     LiquidCrystal_I2C lcd;
+    
+    unsigned long startTime = 0;
+    unsigned long elapsedTime = 0;
+    long playerTime = 0;
+
+    bool timerRunning = false;
+    bool timerFinished = false;
+
 
   public:
 
-    Display(int buttonPin, int adress);
+    // CONSTRUCTOR FOR CREATING DISPLAY OBJECT
+    Display(int adress);
+
+    // FUNCTIONS
+    void timer();
+    
+    void stopTimer();
 
     void initiateDisplay();
 
-    void welcomeMessage();
+    unsigned long getPlayerTime();
 
-    void loopDisplay();
+    void resetTimer();
 
-    void showHighScore();
+    void printTimePenalty(int timePenalty);
+
+    void printHighScore(int highScore);
 
 
+    // MESSAGES
+    void pressButtonMessage();
+
+    void ufoNotOnPlatformMessage();
+
+    void liftUfoToStartMessage();
+
+    void PlayerScoreMessage(int currentPlayerScore);
+
+    void newHighScoreMessage();
+
+    void thanksForPlayingMessage();
 };
 
 #endif
