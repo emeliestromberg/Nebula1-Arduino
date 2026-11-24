@@ -11,7 +11,8 @@ class Game {
 public:
 
 enum GameState{
-  WAITING,
+  WAIT_FOR_START_BUTTON,
+  CHECK_UFO_ON_PLATFORM,
   READY,
   PLAYING,
   GAME_OVER
@@ -31,24 +32,21 @@ const int ledPin1 = 12;
 
 
 // USED FOR TOUCH SENSOR
-int threshold1 = 100;
+int ufoTouchSensorThreshold = 100;
 CapacitiveSensor capSensor;
-int hitCounter = -1;
+int hitCounter;
 bool wasTouched = false;
 unsigned long prevTimeLEDs = millis();
 
 // USED FOR MOTORS
 Servo continousServo;
-
-// USED FOR TIMER
-unsigned long startTime;
-int finalTime;
-int totalPenatlyTime = 0;
-int wipTimerButtonPin = 7;
+int servoIsStill = 86;
 
 // USED FOR GAME CONTROL            //this needs implementing
+int startButtonPin = 7;
+int buttonState;
+int lastButtonState = HIGH;
 bool ufoInAir = false;
-//const int startButtonPin = 7;
 bool startButtonWasPressed = false;
 const int lightSensorPinA = A0;
 const int lightSensorPinB = A1;
@@ -61,10 +59,11 @@ LightSensor lightsensor;
 Display controlDisplay;
 Display highScoreDisplay;
 
-GameState gamestate = WAITING;
+// PLAYER SCORE¨
+int currentPlayerScore;
+int highScore = 10;
 
-// SCORE
-const int currentPlayerScore;
+GameState gamestate = WAIT_FOR_START_BUTTON;
 
 
 
