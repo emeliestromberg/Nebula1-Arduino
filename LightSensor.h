@@ -18,7 +18,7 @@ class LightSensor{
   public:
     LightSensor(int pinA, int pinB, int limit);
 
-    bool chooseStartSensor();
+    bool ufoIsOnPlatform();
     
     bool ufoHasLifted();
 
