@@ -4,8 +4,8 @@
 
 
 Game::Game() 
-:   controlDisplay(wipTimerButtonPin, 0x27),
-    highScoreDisplay(wipTimerButtonPin, 0x3F),      // ändra vilken port den andra displayen går in på
+:   controlDisplay(0x27),
+    highScoreDisplay(0x3F),      // ändra vilken port den andra displayen går in på
     capSensor(4, 2),
     lightsensor(lightSensorPinA, lightSensorPinB, lightThreshold) {
 }
@@ -14,64 +14,88 @@ void Game::begin() {
 
   // DEKLARERA PINS OCH OBJEKT
   pinMode(ledPin1, OUTPUT);
-  //pinMode(startButtonPin, INPUT);
+  pinMode(startButtonPin, INPUT_PULLUP);
   continousServo.attach(9);
-  Serial.begin(9600);
+  continousServo.write(servoIsStill);
   controlDisplay.initiateDisplay();
-
-  // TIMER
-  startTime = millis();
-
+  Serial.begin(9600);
+  hitCounter = 0;
 }
 
 
 void Game::update() {
   // SIFFROR VI MÄTER
   unsigned long currentTime = millis();
-  long sensorValue = capSensor.capacitiveSensor(30);
-  //highScoreDisplay.showHighScore();
+  long ufoTouchSensorValue = capSensor.capacitiveSensor(30);
+  //highScoreDisplay.printFastestTime(highScore);
 
   switch(gamestate){
 
-    case WAITING:
-      controlDisplay.welcomeMessage();
-      //gamestate = READY;
+    case WAIT_FOR_START_BUTTON:
+      buttonState = digitalRead(startButtonPin);
+      controlDisplay.pressButtonMessage();
 
-    if(lightsensor.chooseStartSensor()){
-      Serial.println("Lift UFO to start!");
-      gamestate = READY;
-    }
+      // Detect a new button press and reset game
+      if (buttonState == LOW && lastButtonState == HIGH) {
+        controlDisplay.resetTimer();
+        hitCounter = 0;
+        wasTouched = false;
+        gamestate = CHECK_UFO_ON_PLATFORM;
+        delay(50); // Simple button debounce
+      }
+
+      lastButtonState = buttonState;
+
+    break;
+
+
+    case CHECK_UFO_ON_PLATFORM:
+
+      if(lightsensor.ufoIsOnPlatform()){
+        gamestate = READY;
+      }
+      else{
+        controlDisplay.ufoNotOnPlatformMessage();
+        delay(5000);                                      // test code, delete later
+        gamestate = READY;                                // test code, delete later
+      }
+
       break;
 
     case READY:
-      //if startsensor threshold
-      gamestate = PLAYING;
+    controlDisplay.liftUfoToStartMessage();
+    delay(2000);                                          // test code, delete later
+    gamestate = PLAYING;                                  // test code, delete later
+
+      if(lightsensor.ufoHasLifted()){
+        gamestate = PLAYING;
+      }
+
       break;
 
     
     case PLAYING:
-      controlDisplay.timerDisplay();
-      hitCounter = 0;
+      controlDisplay.timer();
+
+      if(lightsensor.isFinishReached()){
+        gamestate = GAME_OVER;
+        break;
+      }
 
         // TOUCH SENSOR. CONTROLS LIGHTS, NR OF HITS
-      if(currentTime - prevTimeLEDs > 300){           // vi checkar för nudd varje 0,3 sekunder
+      if(currentTime - prevTimeLEDs > 200){                           // vi checkar för nudd varje 0,2 sekunder
 
-        if(sensorValue > threshold1){                 // if nuddar gamewire
+        if(ufoTouchSensorValue > ufoTouchSensorThreshold){            // if nuddar gamewire
             digitalWrite(ledPin1, HIGH);
 
-            if(wasTouched == false){                  // if det är en ny touch
-              hitCounter++;                           // allt det här ska göras varje gång oavsett antal hits
-              totalPenatlyTime += 5;
+            if(wasTouched == false){                                   // if det är en ny touch
+              hitCounter++;                                            // allt det här ska göras varje gång oavsett antal hits
               wasTouched = true;
-              Serial.print(" Number of hits: ");
-              Serial.println(hitCounter);
-              Serial.print(" Time penalty: ");
-              Serial.print(totalPenatlyTime);
-              Serial.println(" sec");
+              controlDisplay.printTimePenalty(hitCounter * 5);
             }
         } 
         
-        else{                                   // vi nuddar inte gamewire
+        else{                                                       // vi nuddar inte gamewire
             digitalWrite(ledPin1, LOW);
             wasTouched = false;
         } 
@@ -83,6 +107,7 @@ void Game::update() {
           continousServo.write(100);
           // light up led strip at random
           // play sounds at random
+          gamestate = GAME_OVER;                          // test code, delete later
         
         }
         else if(hitCounter == 0){
@@ -101,6 +126,28 @@ void Game::update() {
       break;
 
     case GAME_OVER:
+      // STOP EVERYTHING
+      controlDisplay.stopTimer();
+      continousServo.write(servoIsStill);
+      digitalWrite(ledPin1, LOW);
+
+      // PRINT MESSAGES ON DISPLAY
+      currentPlayerScore = controlDisplay.getPlayerTime() + hitCounter * 5;
+      controlDisplay.PlayerScoreMessage(currentPlayerScore);
+      delay(5000);
+
+      if(currentPlayerScore < highScore){
+        highScore = currentPlayerScore;
+        controlDisplay.newHighScoreMessage();
+        delay(5000);
+      }
+      else{
+        controlDisplay.thanksForPlayingMessage();
+        delay(5000);
+      }
+
+      // RESET GAME FOR NEW PLAYER
+      gamestate = WAIT_FOR_START_BUTTON;
 
       break;
 
