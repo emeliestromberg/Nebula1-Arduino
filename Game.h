@@ -32,7 +32,7 @@ const int ledPin1 = 12;
 
 
 // USED FOR TOUCH SENSOR
-int ufoTouchSensorThreshold = 100;
+int ufoTouchSensorThreshold = 20;
 CapacitiveSensor capSensor;
 int hitCounter;
 bool wasTouched = false;
@@ -50,7 +50,7 @@ bool ufoInAir = false;
 bool startButtonWasPressed = false;
 const int lightSensorPinA = A0;
 const int lightSensorPinB = A1;
-const int lightThreshold = 1000;
+const int lightThreshold = 800;               
 
 // LIGHT SENSORS
 LightSensor lightsensor;
