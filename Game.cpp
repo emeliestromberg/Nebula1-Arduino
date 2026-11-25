@@ -26,7 +26,9 @@ void Game::begin() {
 void Game::update() {
   // SIFFROR VI MÄTER
   unsigned long currentTime = millis();
-  long ufoTouchSensorValue = capSensor.capacitiveSensor(30);
+  long ufoTouchSensorValue = capSensor.capacitiveSensor(50);
+  Serial.println(ufoTouchSensorValue);                //så vi ser vad touch-sensorvärdet är
+  //Serial.println(analogRead(lightSensorPinA));                               //så vi ser vad ljus-ensorvärdet är
   //highScoreDisplay.printFastestTime(highScore);
 
   switch(gamestate){
@@ -56,16 +58,16 @@ void Game::update() {
       }
       else{
         controlDisplay.ufoNotOnPlatformMessage();
-        delay(5000);                                      // test code, delete later
-        gamestate = READY;                                // test code, delete later
+        //delay(5000);                                      // test code, delete later
+        //gamestate = READY;                                // test code, delete later
       }
 
       break;
 
     case READY:
     controlDisplay.liftUfoToStartMessage();
-    delay(2000);                                          // test code, delete later
-    gamestate = PLAYING;                                  // test code, delete later
+    //delay(2000);                                          // test code, delete later
+   // gamestate = PLAYING;                                  // test code, delete later
 
       if(lightsensor.ufoHasLifted()){
         gamestate = PLAYING;
@@ -85,7 +87,7 @@ void Game::update() {
         // TOUCH SENSOR. CONTROLS LIGHTS, NR OF HITS
       if(currentTime - prevTimeLEDs > 200){                           // vi checkar för nudd varje 0,2 sekunder
 
-        if(ufoTouchSensorValue > ufoTouchSensorThreshold){            // if nuddar gamewire
+        if(ufoTouchSensorValue < ufoTouchSensorThreshold){            // if nuddar gamewire , testar åt med < om det inte funkar
             digitalWrite(ledPin1, HIGH);
 
             if(wasTouched == false){                                   // if det är en ny touch
