@@ -48,12 +48,19 @@ bool LightSensor::ufoIsOnPlatform() {
 }
 
 
-bool LightSensor::ufoHasLifted() {
+//bool LightSensor::ufoHasLifted() {
   
-  if(startSensor > lightThreshold){
-    return true;
+//  if(startSensor > lightThreshold){
+//    return true;                              //gamla ufoHasLifted-funktionen som claude tyckte var fel
+//  }
+//  return false;
+//}
+
+bool LightSensor::ufoHasLifted() {
+  if(startSensor == -1){
+    return false;                                // ingen startplattform vald än
   }
-  return false;
+  return analogRead(startSensor) >= lightThreshold;
 }
 
 bool LightSensor::isFinishReached() {
