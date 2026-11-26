@@ -69,7 +69,7 @@ void Display::printTimePenalty(int timePenalty){
   lcd.setCursor(9, 1);
   lcd.print(timePenalty);
   lcd.setCursor(11, 1);
-  lcd.print(" sec");
+  lcd.print("sec");
 }
 
 void Display::printHighScore(int highScore){
