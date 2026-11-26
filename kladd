@@ -1,0 +1,24 @@
+Serial.println("We are in case 1");
+
+    int reading = digitalRead(startButtonPin);
+
+    if (reading != lastButtonReading) {
+        lastDebounceTime = millis();
+        Serial.println("place 1");
+    }
+
+    if ((millis() - lastDebounceTime) > debounceDelay) {
+      Serial.println("place 2");
+
+        if (reading == LOW && lastButtonReading == HIGH) {
+
+            controlDisplay.resetTimer();
+            hitCounter = 0;
+            wasTouched = false;
+
+            Serial.println("Button press successful");
+        }
+    }
+
+    lastButtonReading = reading;
+
