@@ -31,12 +31,12 @@ private:
 const int ledPin1 = 12;
 
 
-// USED FOR TOUCH SENSOR
-int ufoTouchSensorThreshold = 20;
-CapacitiveSensor capSensor;
+// USED FOR UFO TOUCH
+int ufoWirePin = 4;
+int ufoWireState;
+int lastUfoWireState = HIGH;
 int hitCounter;
-bool wasTouched = false;
-unsigned long prevTimeLEDs = millis();
+unsigned long prevTime = millis();
 
 // USED FOR MOTORS
 Servo continousServo;
@@ -48,12 +48,12 @@ int buttonState;
 int lastButtonState = HIGH;
 bool ufoInAir = false;
 bool startButtonWasPressed = false;
-const int lightSensorPinA = A0;
-const int lightSensorPinB = A1;
-const int lightThreshold = 800;               
 
 // LIGHT SENSORS
 LightSensor lightsensor;
+const int lightSensorPinA = A0;
+const int lightSensorPinB = A1;
+const int lightThreshold = 800;               
 
 // DISPLAY
 Display controlDisplay;
@@ -64,6 +64,13 @@ int currentPlayerScore;
 int highScore = 10;
 
 GameState gamestate = WAIT_FOR_START_BUTTON;
+
+// TRYING BUTTON 
+int lastButtonReading = HIGH;
+int stableButtonState = HIGH;
+
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 0;
 
 
 
